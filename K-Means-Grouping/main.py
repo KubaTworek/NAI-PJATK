@@ -8,13 +8,16 @@ def load_data(filename):
     with open(filename, 'r') as file:
         reader = csv.reader(file)
         for row in reader:
-            x, y = map(float, row)
-            data.append((x, y))
+            x, y, *z = map(float, row)
+            data.append((x, y, *z))
     return data
 
 
 def euclidean_distance(p1, p2):
-    return math.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
+    distance = 0
+    for i in range(len(p1)):
+        distance += (p1[i] - p2[i]) ** 2
+    return math.sqrt(distance)
 
 
 def kmeans(data, k):
@@ -30,9 +33,7 @@ def kmeans(data, k):
         new_centroids = []
         for group in groups:
             if group:
-                x = sum(point[0] for point in group) / len(group)
-                y = sum(point[1] for point in group) / len(group)
-                new_centroids.append((x, y))
+                new_centroids.append(tuple(sum(point[i] for point in group) / len(group) for i in range(len(point))))
             else:
                 new_centroids.append(centroids[groups.index(group)])
 
@@ -53,4 +54,4 @@ def kmeans(data, k):
 
 
 data = load_data('data.csv')
-kmeans(data, 5)
+kmeans(data, 3)
